@@ -1,94 +1,144 @@
-import { ArrowDownToLine, Wallet } from "lucide-react";
+import { useState } from "react";
+import { ArrowDownToLine, Wallet, CheckCircle } from "lucide-react";
+
+import Card from "../components/common/Card";
+import PageHeader from "../components/common/PageHeader";
+import Button from "../components/common/Button";
+import Input from "../components/common/Input";
 
 function Deposits() {
-  const handleDeposit = (e) => {
+  const [formData, setFormData] = useState({
+    account: "",
+    amount: "",
+    description: "",
+  });
+
+  const [message, setMessage] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+
+    setMessage("");
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Deposit functionality will be connected to the backend later.");
+
+    if (Number(formData.amount) <= 0) {
+      setMessage("Please enter a valid deposit amount.");
+      return;
+    }
+
+    setMessage("Deposit form validated. Backend integration is pending.");
   };
 
   return (
-    <div className="max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Deposit Money</h1>
-        <p className="mt-1 text-sm text-gray-500">Add money to your account.</p>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Deposits"
+        description="Add funds to customer accounts."
+      />
 
-      <div className="rounded-xl border border-gray-200 bg-white p-6">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-lg bg-green-50 p-3">
-            <ArrowDownToLine className="text-green-600" size={22} />
-          </div>
+      <div className="mx-auto max-w-2xl">
+        <Card>
+          <div className="mb-6 flex items-center gap-3">
+            <div className="rounded-xl bg-green-50 p-3 text-green-600">
+              <ArrowDownToLine size={24} />
+            </div>
 
-          <div>
-            <h2 className="font-semibold text-gray-800">New Deposit</h2>
-            <p className="text-sm text-gray-500">
-              Enter your deposit details below.
-            </p>
-          </div>
-        </div>
-
-        <form onSubmit={handleDeposit} className="space-y-5">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Select Account
-            </label>
-
-            <select
-              required
-              defaultValue=""
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500"
-            >
-              <option value="" disabled>
-                Select destination account
-              </option>
-              <option value="account-1">Account ending 1234</option>
-              <option value="account-2">Account ending 5678</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Deposit Amount (₹)
-            </label>
-
-            <input
-              type="number"
-              min="0.01"
-              step="0.01"
-              required
-              placeholder="Enter amount"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Description
-            </label>
-
-            <textarea
-              rows="3"
-              placeholder="Enter deposit description"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <div className="rounded-lg bg-green-50 p-4">
-            <div className="flex items-center gap-2 text-sm text-green-700">
-              <Wallet size={18} />
-              <span>
-                Your account balance will be updated after a successful deposit.
-              </span>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Deposit Details
+              </h3>
+              <p className="text-sm text-gray-500">
+                Enter the deposit information below.
+              </p>
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-green-600 px-4 py-3 font-medium text-white hover:bg-green-700"
-          >
-            Deposit Money
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Destination account */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Destination Account
+              </label>
+
+              <select
+                name="account"
+                value={formData.account}
+                onChange={handleChange}
+                required
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100"
+              >
+                <option value="">Select account</option>
+                <option value="1001">LL10000001</option>
+                <option value="1002">LL10000002</option>
+              </select>
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Deposit Amount (₹)
+              </label>
+
+              <Input
+                name="amount"
+                inputType="number"
+                value={formData.amount}
+                onChange={handleChange}
+                placeholder="Enter deposit amount"
+                required
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Description
+              </label>
+
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Enter deposit description"
+                rows="3"
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100"
+              />
+            </div>
+
+            {/* Feedback */}
+            {message && (
+              <div className="rounded-lg bg-blue-50 p-3 text-sm text-blue-700">
+                {message}
+              </div>
+            )}
+
+            <Button type="submit" block variant="success">
+              <ArrowDownToLine size={18} />
+              Review Deposit
+            </Button>
+          </form>
+        </Card>
+
+        {/* Information */}
+        <div className="mt-5 flex items-start gap-3 rounded-xl border border-green-100 bg-green-50 p-4">
+          <CheckCircle className="mt-0.5 text-green-600" size={20} />
+
+          <div>
+            <p className="text-sm font-semibold text-green-800">
+              Deposit Processing
+            </p>
+            <p className="mt-1 text-xs text-green-700">
+              Deposits will be recorded in the financial ledger and processed
+              using database transactions.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

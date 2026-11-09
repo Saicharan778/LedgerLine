@@ -1,96 +1,144 @@
-import { ArrowUpFromLine, Wallet, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { ArrowUpFromLine, CheckCircle } from "lucide-react";
+
+import Card from "../components/common/Card";
+import PageHeader from "../components/common/PageHeader";
+import Button from "../components/common/Button";
+import Input from "../components/common/Input";
 
 function Withdrawals() {
-  const handleWithdrawal = (e) => {
+  const [formData, setFormData] = useState({
+    account: "",
+    amount: "",
+    description: "",
+  });
+
+  const [message, setMessage] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+
+    setMessage("");
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Withdrawal functionality will be connected to the backend later.");
+
+    if (Number(formData.amount) <= 0) {
+      setMessage("Please enter a valid withdrawal amount.");
+      return;
+    }
+
+    setMessage("Withdrawal form validated. Backend integration is pending.");
   };
 
   return (
-    <div className="max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Withdraw Money</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Withdraw money from your account.
-        </p>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Withdrawals"
+        description="Withdraw funds from customer accounts."
+      />
 
-      <div className="rounded-xl border border-gray-200 bg-white p-6">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-lg bg-red-50 p-3">
-            <ArrowUpFromLine className="text-red-600" size={22} />
-          </div>
+      <div className="mx-auto max-w-2xl">
+        <Card>
+          <div className="mb-6 flex items-center gap-3">
+            <div className="rounded-xl bg-red-50 p-3 text-red-600">
+              <ArrowUpFromLine size={24} />
+            </div>
 
-          <div>
-            <h2 className="font-semibold text-gray-800">New Withdrawal</h2>
-            <p className="text-sm text-gray-500">
-              Enter your withdrawal details below.
-            </p>
-          </div>
-        </div>
-
-        <form onSubmit={handleWithdrawal} className="space-y-5">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Select Account
-            </label>
-
-            <select
-              required
-              defaultValue=""
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500"
-            >
-              <option value="" disabled>
-                Select source account
-              </option>
-              <option value="account-1">Account ending 1234</option>
-              <option value="account-2">Account ending 5678</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Withdrawal Amount (₹)
-            </label>
-
-            <input
-              type="number"
-              min="0.01"
-              step="0.01"
-              required
-              placeholder="Enter amount"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Description
-            </label>
-
-            <textarea
-              rows="3"
-              placeholder="Enter withdrawal description"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <div className="rounded-lg bg-red-50 p-4">
-            <div className="flex items-center gap-2 text-sm text-red-700">
-              <AlertCircle size={18} />
-              <span>
-                Withdrawals cannot exceed the available account balance.
-              </span>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Withdrawal Details
+              </h3>
+              <p className="text-sm text-gray-500">
+                Enter the withdrawal information below.
+              </p>
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-red-600 px-4 py-3 font-medium text-white hover:bg-red-700"
-          >
-            Withdraw Money
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Source account */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Source Account
+              </label>
+
+              <select
+                name="account"
+                value={formData.account}
+                onChange={handleChange}
+                required
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"
+              >
+                <option value="">Select account</option>
+                <option value="1001">LL10000001</option>
+                <option value="1002">LL10000002</option>
+              </select>
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Withdrawal Amount (₹)
+              </label>
+
+              <Input
+                name="amount"
+                inputType="number"
+                value={formData.amount}
+                onChange={handleChange}
+                placeholder="Enter withdrawal amount"
+                required
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Description
+              </label>
+
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Enter withdrawal description"
+                rows="3"
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"
+              />
+            </div>
+
+            {/* Feedback */}
+            {message && (
+              <div className="rounded-lg bg-blue-50 p-3 text-sm text-blue-700">
+                {message}
+              </div>
+            )}
+
+            <Button type="submit" block variant="danger">
+              <ArrowUpFromLine size={18} />
+              Review Withdrawal
+            </Button>
+          </form>
+        </Card>
+
+        {/* Security information */}
+        <div className="mt-5 flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50 p-4">
+          <CheckCircle className="mt-0.5 text-amber-600" size={20} />
+
+          <div>
+            <p className="text-sm font-semibold text-amber-800">
+              Withdrawal Protection
+            </p>
+            <p className="mt-1 text-xs text-amber-700">
+              The backend will verify account authorization and available
+              balance before processing a withdrawal.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
